@@ -1,0 +1,33 @@
+# Arquivos de Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambiente Virtual
+venv/
+*.venv/
+
+# Arquivo de variáveis de ambiente
+.env
+
+*.sql
+
+startups_data.csv
+
+docker-compose.yml
+
+import_data.py
+
+# Arquivos do Alembic
+
+.alembic_cache/
+
+
+
+# Ignorar arquivos de upload
+
+static/uploads/
+
+# ignorar 'static' inteira:
+# /static/
