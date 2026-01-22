@@ -82,7 +82,7 @@ if uploaded_file:
 
 
                 #knowledge_base._load_content(path=file_path, recreate=False) # recreate=False evita apagar dados anteriores
-                knowledge_base.add_content(path=file_path,  readers=PDFReader(chunk=True))
+                knowledge_base.add_content(path=file_path,  reader=PDFReader(chunk=True))
                 #knowledge_base.insert(path="cookbook/08_knowledge/testing_resources/cv_1.pdf",reader=PDFReader())
                 
                 st.success("Sucesso! O PDF foi processado e salvo no PgVector.")
@@ -127,7 +127,8 @@ if prompt := st.chat_input("Faça uma pergunta sobre o PDF..."):
                 model=OpenAIChat(id="gpt-5-nano"),
                 knowledge=knowledge_base,
                 search_knowledge=True, # Força o agente a buscar no banco de vetores
-                show_tool_calls=True,
+                #show_tool_calls=True,
+                debug_mode=True,
                 markdown=True,
                 instructions=["Use sempre o knowledge base para responder. Se não encontrar, diga que não sabe."]
             )
