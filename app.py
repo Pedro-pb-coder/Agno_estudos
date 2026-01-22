@@ -5,6 +5,7 @@ from agno.agent import Agent
 #
 from agno.knowledge.knowledge import Knowledge
 from agno.knowledge.reader.pdf_reader import PDFReader
+from agno.knowledge.chunking.agentic import AgenticChunking
 #from agno.knowledge.pdf import PDFKnowledgeBase
 
 
@@ -82,7 +83,22 @@ if uploaded_file:
 
 
                 #knowledge_base._load_content(path=file_path, recreate=False) # recreate=False evita apagar dados anteriores
-                knowledge_base.add_content(path=file_path,  reader=PDFReader(chunk=True))
+                
+                knowledge_base.add_content(path=file_path,skip_if_exists= True,  reader=PDFReader(chunk=True))
+
+                # agentic chunking 
+                
+                knowledge_base.add_content(
+                    path=file_path,
+                    skip_if_exists= True,
+                    reader=PDFReader(
+                        name="Agentic Chunking Reader",
+                        chunking_strategy=AgenticChunking(),
+
+                    )
+                )
+
+
                 #knowledge_base.insert(path="cookbook/08_knowledge/testing_resources/cv_1.pdf",reader=PDFReader())
                 
                 st.success("Sucesso! O PDF foi processado e salvo no PgVector.")
