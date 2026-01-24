@@ -13,6 +13,9 @@ from agno.vectordb.pgvector import PgVector
 from agno.knowledge.embedder.openai import OpenAIEmbedder
 from agno.models.openai import OpenAIChat
 
+# memory
+from agno.db.postgres import PostgresDb
+
 # --- Config da Página ---
 st.set_page_config(page_title="Agente RAG com Agno & PgVector", layout="wide")
 st.title("🤖 Agente de Conhecimento (PDF + PgVector)")
@@ -34,6 +37,13 @@ if not openai_api_key:
 
 # variável de ambiente para o Agno/OpenAI
 os.environ["OPENAI_API_KEY"] = openai_api_key
+
+# Configura o armazenamento das conversas no mesmo banco do Docker
+db = PostgresDb(
+  db_url=db_url,
+  memory_table="user_memories_chat",  # Optionally specify a table name for the memories
+)
+
 
 # --- Lógica do Banco de Vetores (PgVector) ---
 def get_vector_db():
@@ -144,6 +154,15 @@ if prompt := st.chat_input("Faça uma pergunta sobre o PDF..."):
                 knowledge=knowledge_base,
                 search_knowledge=True, # Força o agente a buscar no banco de vetores
                 #show_tool_calls=True,
+
+                # acesso as conversas anteriores. para informar a resposta
+                db=db,
+                # Give the Agent the ability to update memories
+                enable_agentic_memory=True,
+                # OR - Run the MemoryManager automatically after each response
+                enable_user_memories=True,
+
+
                 debug_mode=True,
                 markdown=True,
                 instructions=["Use sempre o knowledge base para responder. Se não encontrar, diga que não sabe."]
