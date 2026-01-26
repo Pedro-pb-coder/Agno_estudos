@@ -15,6 +15,7 @@ from agno.models.openai import OpenAIChat
 
 # memory
 from agno.db.postgres import PostgresDb
+from agno.tools.duckduckgo import DuckDuckGoTools
 
 # --- Config da Página ---
 st.set_page_config(page_title="Agente RAG com Agno & PgVector", layout="wide")
@@ -162,10 +163,19 @@ if prompt := st.chat_input("Faça uma pergunta sobre o PDF..."):
                 # OR - Run the MemoryManager automatically after each response
                 enable_user_memories=True,
 
+                # --- Agent History ---
+                # add_history_to_context=true adds messages from the chat history to the messages list sent to the Model.
+                add_history_to_context = True,
+                # Number of historical runs to include in the messages
+                num_history_runs= 5,
+                # Number of historical messages to include in the messages list sent to the Model.
+                #num_history_messages = 5,
 
+
+                tools=[DuckDuckGoTools()],
                 debug_mode=True,
                 markdown=True,
-                instructions=["Use sempre o knowledge base para responder. Se não encontrar, diga que não sabe."]
+                #instructions=["Use sempre o knowledge base para responder. Se não encontrar, diga que não sabe."]
             )
             
             # Executar o agente (stream=True para efeito de digitação)
