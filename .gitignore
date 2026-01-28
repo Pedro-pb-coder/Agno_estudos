@@ -32,3 +32,4 @@ static/uploads/
 # ignorar 'static' inteira:
 # /static/
 temp_pdfs
+tmp
