@@ -8,7 +8,7 @@ from agno.knowledge.embedder.openai import OpenAIEmbedder
 from agno.models.openai import OpenAIChat
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
-
+from agno.learn import LearningMachine, SessionContextConfig
 # Configurações Globais
 DB_URL = "postgresql+psycopg://ai:ai@localhost:5532/ai" 
 
@@ -16,7 +16,7 @@ DB_URL = "postgresql+psycopg://ai:ai@localhost:5532/ai"
 def get_vector_db():
     """Configura a conexão com o PgVector."""
     return PgVector(
-        table_name="pdf_documents",
+        table_name="pdf_documents", # adicionar user_id e session_id
         db_url=DB_URL,
         embedder=OpenAIEmbedder(id="text-embedding-3-small"), 
     )
@@ -25,6 +25,7 @@ def get_vector_db():
 def get_storage():
     return PostgresDb(
         db_url=DB_URL,
+        #adicionar tabela de session_ids para o escopo das sessões serem separados 
         memory_table="user_memories_chat",
     )
 
@@ -51,7 +52,7 @@ def process_pdf(file_path: str):
         return False, str(e)
 
 # --- 4. Criar o Agente ---
-def get_agent(session_id: str = "default_session"):
+def get_agent(api_key,session_id: str = "default_session"):
     """
     Cria o agente. O session_id é crucial para a API saber 
     quem é o usuário e buscar o histórico correto.
@@ -61,7 +62,7 @@ def get_agent(session_id: str = "default_session"):
     storage = get_storage()
     
     return Agent(
-        model=OpenAIChat(id="gpt-5-nano"), # Ajustado para modelo existente
+        model=OpenAIChat(id="gpt-5-nano",api_key=api_key), # Ajustado para modelo existente
         knowledge=knowledge_base,
         search_knowledge=True,
         
@@ -81,7 +82,8 @@ def get_agent(session_id: str = "default_session"):
         session_id=session_id, # Importante para API
         add_history_to_context=True,
         num_history_runs=5,
-        
+       
+
         # Configs
         markdown=True,
         debug_mode=True,

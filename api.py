@@ -12,8 +12,20 @@ from router.rag_core import process_pdf,get_agent
 app = FastAPI(title="API Agente RAG", version="1.0")
 
 # Substitua pela sua chave ou garanta que está no ambiente
-# os.environ["OPENAI_API_KEY"] = "sk-..." 
 
+
+from dotenv import load_dotenv
+import os
+
+# Verificação de segurança da API Key
+load_dotenv()
+# Verificação de segurança da API Key
+
+if not os.getenv("OPENAI_API_KEY"):
+    print("❌ Erro: OPENAI_API_KEY não encontrada no arquivo .env")
+    exit()
+
+api_key = os.environ["OPENAI_API_KEY"] 
 DB_URL = "postgresql+psycopg://ai:ai@localhost:5532/ai"
 TEMP_DIR = "temp_pdfs"
 
@@ -57,7 +69,7 @@ def chat_endpoint(request: ChatRequest):
     Recebe uma pergunta JSON {"message": "..."} e retorna a resposta do agente.
     """
     try:
-        agent = get_agent(session_id=request.session_id)
+        agent = get_agent(api_key=api_key,session_id=request.session_id)
         
         # Executa o agente (stream=False para pegar a resposta inteira de uma vez)
         response_obj = agent.run(request.message, stream=False)
